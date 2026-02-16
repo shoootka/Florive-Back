@@ -1,2 +1,2 @@
-# Florive-Back-end
+# Florive-Back
 Back-end part of our project
