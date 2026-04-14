@@ -1,4 +1,4 @@
-﻿using Florive.Api.Domain;
+﻿using Florive.Domains.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

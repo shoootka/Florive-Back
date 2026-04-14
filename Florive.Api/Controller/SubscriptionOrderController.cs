@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Florive.Api.Domain;
+using Florive.Domains.Entities;
 
 namespace Florive.Api.Controller
 {

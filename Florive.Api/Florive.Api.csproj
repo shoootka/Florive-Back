@@ -10,4 +10,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Domain\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Florive.BusinessLogic\Florive.BusinessLogic.csproj" />
+    <ProjectReference Include="..\Florive.DataAccess\Florive.DataAccess.csproj" />
+    <ProjectReference Include="..\Florive.Domains\Florive.Domains.csproj" />
+  </ItemGroup>
+
 </Project>
