@@ -1,4 +1,4 @@
-﻿namespace Florive.Api.Domain
+﻿namespace Florive.Domains.Entities
 {
     public class SubscriptionPlan
     {
