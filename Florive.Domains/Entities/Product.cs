@@ -1,6 +1,6 @@
 ﻿namespace Florive.Domains.Entities
 {
-    public class Flower
+    public class Product
     {
         public int Id { get; set; }
 

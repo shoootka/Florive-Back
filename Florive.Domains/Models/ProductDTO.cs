@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Florive.Domains.Models
 {
-    public class FlowerDTO
+    public class ProductDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Florive.Domains\Florive.Domains.csproj" />
+  </ItemGroup>
+
 </Project>
