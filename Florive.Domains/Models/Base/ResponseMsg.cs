@@ -9,8 +9,7 @@ namespace Florive.Domains.Models.Base
     public class ResponseMsg
     {
             public bool IsSuccess { get; set; }
-            public string Message { get; set; }
-        }
+            public string Message { get; set; } = string.Empty;
+            public object Data { get; set; }
     }
-}
 }
