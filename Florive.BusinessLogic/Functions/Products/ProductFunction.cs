@@ -1,5 +1,6 @@
 ﻿using Florive.BusinessLogic.Core.Products;
 using Florive.BusinessLogic.Interface;
+using Florive.DataAccess;
 using Florive.Domains.Models;
 using Florive.Domains.Models.Base;
 using System;
@@ -12,6 +13,10 @@ namespace Florive.BusinessLogic.Functions.Products
 {
     public class ProductFunction : ProductAction, IProduct
     {
+        public ProductFunction(AppDbContext context) : base(context)
+        {
+        }
+
         public ResponseMsg GetAllProductsAction()
         {
             return ExecuteGetAllProductsAction();

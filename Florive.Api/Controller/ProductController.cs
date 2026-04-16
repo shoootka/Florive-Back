@@ -1,4 +1,5 @@
 ﻿using Florive.BusinessLogic.Interface;
+using Florive.DataAccess;
 using Florive.Domains.Entities;
 using Florive.Domains.Models;
 using Microsoft.AspNetCore.Http;
@@ -12,10 +13,9 @@ namespace Florive.Api.Controller
     {
         private IProduct _productService;
 
-        public ProductController()
+        public ProductController(AppDbContext context)
         {
-            var bl = new BusinessLogic.BusinessLogic();
-            _productService = bl.GetProductActions();
+            _productService = new Florive.BusinessLogic.Functions.Products.ProductFunction(context);
         }
 
         [HttpGet]

@@ -1,6 +1,8 @@
 ﻿using Florive.Domains.Entities;
 using Florive.Domains.Models;
 using Florive.Domains.Models.Base;
+using Florive.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +13,21 @@ namespace Florive.BusinessLogic.Core.Products
 {
     public class ProductAction
     {
-        protected static List<Product> _products = new List<Product>();
+        private readonly AppDbContext _context;
+
+        public ProductAction(AppDbContext context)
+        {
+            _context = context;
+        }
 
         protected ResponseMsg ExecuteGetAllProductsAction()
         {
             try
             {
+                var products = _context.Products.ToList();
+
                 var result = new List<ProductDTO>();
-                foreach (var product in _products)
+                foreach (var product in products)
                 {
                     result.Add(new ProductDTO
                     {
@@ -51,7 +60,7 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
-                var product = _products.FirstOrDefault(p => p.Id == id);
+                var product = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (product == null)
                 {
@@ -94,14 +103,14 @@ namespace Florive.BusinessLogic.Core.Products
             {
                 var newProduct = new Product
                 {
-                    Id = _products.Count + 1,
                     Name = product.Name,
                     Price = product.Price,
                     Category = product.Category,
                     Image = product.Image
                 };
 
-                _products.Add(newProduct);
+                _context.Products.Add(newProduct);
+                _context.SaveChanges();
 
                 return new ResponseMsg
                 {
@@ -124,7 +133,7 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
-                var existingProduct = _products.FirstOrDefault(p => p.Id == id);
+                var existingProduct = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (existingProduct == null)
                 {
@@ -139,6 +148,8 @@ namespace Florive.BusinessLogic.Core.Products
                 existingProduct.Price = product.Price;
                 existingProduct.Category = product.Category;
                 existingProduct.Image = product.Image;
+
+                _context.SaveChanges();
 
                 return new ResponseMsg
                 {
@@ -161,7 +172,7 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
-                var product = _products.FirstOrDefault(p => p.Id == id);
+                var product = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (product == null)
                 {
@@ -172,7 +183,8 @@ namespace Florive.BusinessLogic.Core.Products
                     };
                 }
 
-                _products.Remove(product);
+                _context.Products.Remove(product);
+                _context.SaveChanges();
 
                 return new ResponseMsg
                 {
