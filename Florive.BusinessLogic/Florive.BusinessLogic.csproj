@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Florive.DataAccess\Florive.DataAccess.csproj" />
     <ProjectReference Include="..\Florive.Domains\Florive.Domains.csproj" />
   </ItemGroup>
 
