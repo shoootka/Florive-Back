@@ -1,6 +1,10 @@
-﻿using Florive.Domains.Entities;
+﻿using Florive.BusinessLogic.Interface;
+using Florive.DataAccess;
+using Florive.Domains.Entities;
+using Florive.Domains.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace Florive.Api.Controller
 {
@@ -8,68 +12,65 @@ namespace Florive.Api.Controller
     [ApiController]
     public class UserController : ControllerBase
     {
-        private static List<User> _users = new List<User>();
+        private IUser _userService;
+
+        public UserController(AppDbContext context)
+        {
+            _userService = new Florive.BusinessLogic.Functions.Users.UserFunction(context);
+        }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_users);
+            var result = _userService.GetAllUsersAction();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var result = _userService.GetUserByIdAction(id);
 
-            if (user == null)
-            {
-                return NotFound(new { Message = $"User with id {id} not found" });
-            }
+            if (!result.IsSuccess)
+                return NotFound(result);
 
-            return Ok(user);
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] User user)
+        public IActionResult Create([FromBody] UserDTO user)
         {
-            user.Id = _users.Count + 1;
+            var result = _userService.CreateUserAction(user);
 
-            _users.Add(user);
+            if (!result.IsSuccess)
+                return BadRequest(result);
 
-            return Created($"/api/user/{user.Id}", user);
+            var createdUser = (UserDTO)result.Data;
+            return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] User updatedUser)
+        public IActionResult Update(int id, [FromBody] UserDTO user)
         {
-            var existingUser = _users.FirstOrDefault(u => u.Id == id);
+            var result = _userService.UpdateUserAction(id, user);
 
-            if (existingUser == null)
+            if (!result.IsSuccess)
             {
-                return NotFound(new { Message = $"User with id {id} not found" });
+                return BadRequest(result);
             }
 
-            existingUser.FullName = updatedUser.FullName;
-            existingUser.Email = updatedUser.Email;
-            existingUser.Password = updatedUser.Password;
-            existingUser.Role = updatedUser.Role;
-
-            return Ok(existingUser);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var result = _userService.DeleteUserAction(id);
 
-            if (user == null)
-            {
-                return NotFound(new { Message = $"User with id {id} not found" });
-            }
+            if (!result.IsSuccess)
+                return NotFound(result);
 
-            _users.Remove(user);
-
-            return NoContent();
+            return Ok(result);
         }
     }
 }

@@ -60,6 +60,15 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
+                if (id <= 0)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "ID должен быть больше 0"
+                    };
+                }
+
                 var product = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (product == null)
@@ -101,6 +110,33 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
+                if (product == null)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "Данные продукта не переданы"
+                    };
+                }
+
+                if (string.IsNullOrWhiteSpace(product.Name))
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "Название продукта обязательно"
+                    };
+                }
+
+                if (product.Price <= 0)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "Цена должна быть больше 0"
+                    };
+                }
+
                 var newProduct = new Product
                 {
                     Name = product.Name,
@@ -133,6 +169,42 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
+                if (id <= 0)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "ID должен быть больше 0"
+                    };
+                }
+
+                if (product == null)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "Данные продукта не переданы"
+                    };
+                }
+
+                if (string.IsNullOrWhiteSpace(product.Name))
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "Название продукта обязательно"
+                    };
+                }
+
+                if (product.Price <= 0)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "Цена должна быть больше 0"
+                    };
+                }
+
                 var existingProduct = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (existingProduct == null)
@@ -172,6 +244,15 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
+                if (id <= 0)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "ID должен быть больше 0"
+                    };
+                }
+
                 var product = _context.Products.FirstOrDefault(p => p.Id == id);
 
                 if (product == null)

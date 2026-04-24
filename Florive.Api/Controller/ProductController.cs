@@ -29,6 +29,10 @@ namespace Florive.Api.Controller
         public IActionResult GetById(int id)
         {
             var result = _productService.GetProductByIdAction(id);
+
+            if (!result.IsSuccess)
+                return NotFound(result);
+
             return Ok(result);
         }
 
@@ -36,13 +40,23 @@ namespace Florive.Api.Controller
         public IActionResult Create([FromBody] ProductDTO product)
         {
             var result = _productService.CreateProductAction(product);
-            return Ok(result);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return CreatedAtAction(nameof(GetById), new { id = ((Product)result.Data).Id }, result);
         }
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] ProductDTO product)
         {
             var result = _productService.UpdateProductAction(id, product);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+
             return Ok(result);
         }
 
@@ -50,6 +64,10 @@ namespace Florive.Api.Controller
         public IActionResult Delete(int id)
         {
             var result = _productService.DeleteProductAction(id);
+
+            if (!result.IsSuccess)
+                return NotFound(result);
+
             return Ok(result);
         }
 

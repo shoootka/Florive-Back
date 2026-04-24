@@ -3,13 +3,11 @@
     public class User
     {
         public int Id { get; set; }
-
-        public string FullName { get; set; } = string.Empty;
-
-        public string Email { get; set; } = string.Empty;
-
-        public string Password { get; set; } = string.Empty;
-
-        public string Role { get; set; } = string.Empty;
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string PasswordHash { get; set; }  //не будем  хранить пароль в открытом виде но пока без хэширования
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Florive.BusinessLogic.Functions.Products;
+using Florive.BusinessLogic.Functions.Users;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 
@@ -16,6 +17,11 @@ namespace Florive.BusinessLogic
         public IProduct GetProductActions()
         {
             return new ProductFunction(_context);  
+        }
+
+        public IUser GetUserActions() 
+        {
+            return new UserFunction(_context);
         }
 
         // TODO: добавить остальные 
