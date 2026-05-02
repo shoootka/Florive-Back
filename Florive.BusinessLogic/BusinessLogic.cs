@@ -2,6 +2,7 @@
 using Florive.BusinessLogic.Functions.SubscriptionOrders;
 using Florive.BusinessLogic.Functions.SubscriptionPlans;
 using Florive.BusinessLogic.Functions.Users;
+using Florive.BusinessLogic.Functions.Auth;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 
@@ -34,6 +35,11 @@ namespace Florive.BusinessLogic
         public ISubscriptionOrder GetSubscriptionOrderActions()
         {
             return new SubscriptionOrderFlow(_context);
+        }
+
+        public IAuth GetAuthFlow()
+        {
+            return new AuthFlow(_context);
         }
     }
 }
