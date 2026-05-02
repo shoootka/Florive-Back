@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Florive.Domains.Entities;
+﻿using Florive.BusinessLogic.Interface;
+using Florive.DataAccess;
+using Florive.Domains.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Florive.Api.Controller
 {
@@ -7,73 +10,65 @@ namespace Florive.Api.Controller
     [ApiController]
     public class SubscriptionOrderController : ControllerBase
     {
-        private static List<SubscriptionOrder> _orders = new List<SubscriptionOrder>();
+        private ISubscriptionOrder _subscriptionOrderService;
+
+        public SubscriptionOrderController(AppDbContext context)
+        {
+            var bl = new Florive.BusinessLogic.BusinessLogic(context);
+            _subscriptionOrderService = bl.GetSubscriptionOrderActions();
+        }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_orders);
+            var result = _subscriptionOrderService.GetAllOrdersAction();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var order = _orders.FirstOrDefault(o => o.Id == id);
+            var result = _subscriptionOrderService.GetOrderByIdAction(id);
 
-            if (order == null)
-            {
-                return NotFound(new { Message = $"Order with id {id} not found" });
-            }
+            if (!result.IsSuccess)
+                return NotFound(result);
 
-            return Ok(order);
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] SubscriptionOrder order)
+        public IActionResult Create([FromBody] SubscriptionOrderDTO order)
         {
-            order.Id = _orders.Count + 1;
-            order.Status = "New";
+            var result = _subscriptionOrderService.CreateOrderAction(order);
 
-            _orders.Add(order);
+            if (!result.IsSuccess)
+                return BadRequest(result);
 
-            return Created($"/api/subscriptionorder/{order.Id}", order);
+            return CreatedAtAction(nameof(GetById), new { id = ((Florive.Domains.Entities.SubscriptionOrder)result.Data).Id }, result);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] SubscriptionOrder updatedOrder)
+        public IActionResult Update(int id, [FromBody] SubscriptionOrderDTO order)
         {
-            var existingOrder = _orders.FirstOrDefault(o => o.Id == id);
+            var result = _subscriptionOrderService.UpdateOrderAction(id, order);
 
-            if (existingOrder == null)
+            if (!result.IsSuccess)
             {
-                return NotFound(new { Message = $"Order with id {id} not found" });
+                return BadRequest(result);
             }
 
-            existingOrder.Name = updatedOrder.Name;
-            existingOrder.Phone = updatedOrder.Phone;
-            existingOrder.Email = updatedOrder.Email;
-            existingOrder.Address = updatedOrder.Address;
-            existingOrder.Frequency = updatedOrder.Frequency;
-            existingOrder.FirstDeliveryDate = updatedOrder.FirstDeliveryDate;
-            existingOrder.Comment = updatedOrder.Comment;
-            existingOrder.Status = updatedOrder.Status;
-
-            return Ok(existingOrder);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var order = _orders.FirstOrDefault(o => o.Id == id);
+            var result = _subscriptionOrderService.DeleteOrderAction(id);
 
-            if (order == null)
-            {
-                return NotFound(new { Message = $"Order with ID {id} not found" });
-            }
+            if (!result.IsSuccess)
+                return NotFound(result);
 
-            _orders.Remove(order);
-
-            return NoContent();
+            return Ok(result);
         }
     }
 }

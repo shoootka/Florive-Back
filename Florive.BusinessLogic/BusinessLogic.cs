@@ -1,4 +1,6 @@
 ﻿using Florive.BusinessLogic.Functions.Products;
+using Florive.BusinessLogic.Functions.SubscriptionOrders;
+using Florive.BusinessLogic.Functions.SubscriptionPlans;
 using Florive.BusinessLogic.Functions.Users;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
@@ -16,14 +18,22 @@ namespace Florive.BusinessLogic
 
         public IProduct GetProductActions()
         {
-            return new ProductFunction(_context);  
+            return new ProductFlow(_context);  
         }
 
         public IUser GetUserActions() 
         {
-            return new UserFunction(_context);
+            return new UserFlow(_context);
         }
 
-        // TODO: добавить остальные 
+        public ISubscriptionPlan GetSubscriptionPlanActions()
+        {
+            return new SubscriptionPlanFlow(_context);
+        }
+
+        public ISubscriptionOrder GetSubscriptionOrderActions()
+        {
+            return new SubscriptionOrderFlow(_context);
+        }
     }
 }

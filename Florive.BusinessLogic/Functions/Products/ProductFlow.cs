@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace Florive.BusinessLogic.Functions.Products
 {
-    public class ProductFunction : ProductAction, IProduct
+    public class ProductFlow : ProductAction, IProduct
     {
-        public ProductFunction(AppDbContext context) : base(context)
+        public ProductFlow(AppDbContext context) : base(context)
         {
         }
 
