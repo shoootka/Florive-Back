@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Florive.BusinessLogic.Interface;
+using Florive.DataAccess;
 using Florive.Domains.Entities;
+using Florive.Domains.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Florive.Api.Controller
 {
@@ -7,68 +10,65 @@ namespace Florive.Api.Controller
     [ApiController]
     public class SubscriptionPlanController : ControllerBase
     {
-        private static List<SubscriptionPlan> _subscriptionPlans = new List<SubscriptionPlan>();
+        private ISubscriptionPlan _subscriptionPlanService;
+
+        public SubscriptionPlanController(AppDbContext context)
+        {
+            var bl = new Florive.BusinessLogic.BusinessLogic(context);
+            _subscriptionPlanService = bl.GetSubscriptionPlanActions();
+        }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_subscriptionPlans);
+            var result = _subscriptionPlanService.GetAllPlansAction();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var subscriptionPlan = _subscriptionPlans.FirstOrDefault(s => s.Id == id);
+            var result = _subscriptionPlanService.GetPlanByIdAction(id);
 
-            if (subscriptionPlan == null)
-            {
-                return NotFound(new { Message = $"Subscription plan with id {id} not found" });
-            }
+            if (!result.IsSuccess)
+                return NotFound(result);
 
-            return Ok(subscriptionPlan);
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] SubscriptionPlan subscriptionPlan)
+        public IActionResult Create([FromBody] SubscriptionPlanDTO plan)
         {
-            subscriptionPlan.Id = _subscriptionPlans.Count + 1;
+            var result = _subscriptionPlanService.CreatePlanAction(plan);
 
-            _subscriptionPlans.Add(subscriptionPlan);
+            if (!result.IsSuccess)
+                return BadRequest(result);
 
-            return Created($"/api/subscriptionplan/{subscriptionPlan.Id}", subscriptionPlan);
+            return CreatedAtAction(nameof(GetById), new { id = ((Florive.Domains.Entities.SubscriptionPlan)result.Data).Id }, result);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] SubscriptionPlan updatedSubscriptionPlan)
+        public IActionResult Update(int id, [FromBody] SubscriptionPlanDTO plan)
         {
-            var existingSubscriptionPlan = _subscriptionPlans.FirstOrDefault(s => s.Id == id);
+            var result = _subscriptionPlanService.UpdatePlanAction(id, plan);
 
-            if (existingSubscriptionPlan == null)
+            if (!result.IsSuccess)
             {
-                return NotFound(new { Message = $"Subscription plan with id {id} not found" });
+                return BadRequest(result);
             }
 
-            existingSubscriptionPlan.Name = updatedSubscriptionPlan.Name;
-            existingSubscriptionPlan.Price = updatedSubscriptionPlan.Price;
-            existingSubscriptionPlan.DeliveriesCount = updatedSubscriptionPlan.DeliveriesCount;
-            existingSubscriptionPlan.Description = updatedSubscriptionPlan.Description;
-
-            return Ok(existingSubscriptionPlan);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var subscriptionPlan = _subscriptionPlans.FirstOrDefault(s => s.Id == id);
+            var result = _subscriptionPlanService.DeletePlanAction(id);
 
-            if (subscriptionPlan == null)
-            {
-                return NotFound(new { Message = $"Subscription plan with id {id} not found" });
-            }
+            if (!result.IsSuccess)
+                return NotFound(result);
 
-            _subscriptionPlans.Remove(subscriptionPlan);
-
-            return NoContent();
+            return Ok(result);
         }
     }
 }

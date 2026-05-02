@@ -16,7 +16,8 @@ namespace Florive.Api.Controller
 
         public UserController(AppDbContext context)
         {
-            _userService = new Florive.BusinessLogic.Functions.Users.UserFunction(context);
+            var bl = new Florive.BusinessLogic.BusinessLogic(context);
+            _userService = bl.GetUserActions();
         }
 
         [HttpGet]

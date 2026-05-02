@@ -7,6 +7,8 @@ namespace Florive.DataAccess
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<SubscriptionOrder> SubscriptionOrders { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -18,6 +20,10 @@ namespace Florive.DataAccess
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<SubscriptionPlan>()
                 .Property(p => p.Price)
                 .HasPrecision(18, 2);
         }

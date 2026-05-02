@@ -6,9 +6,9 @@ using Florive.Domains.Models.Base;
 
 namespace Florive.BusinessLogic.Functions.Users
 {
-    public class UserFunction : UserAction, IUser
+    public class UserFlow : UserAction, IUser
     {
-        public UserFunction(AppDbContext context) : base(context)
+        public UserFlow(AppDbContext context) : base(context)
         {
         }
 

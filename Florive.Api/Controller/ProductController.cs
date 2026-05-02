@@ -15,7 +15,8 @@ namespace Florive.Api.Controller
 
         public ProductController(AppDbContext context)
         {
-            _productService = new Florive.BusinessLogic.Functions.Products.ProductFunction(context);
+            var bl = new Florive.BusinessLogic.BusinessLogic(context);
+            _productService = bl.GetProductActions();
         }
 
         [HttpGet]
