@@ -9,6 +9,7 @@ namespace Florive.Domains.Models
     public class SubscriptionOrderDTO
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
         public int SubscriptionPlanId { get; set; }
         public int FirstFlowerId { get; set; }
         public string Name { get; set; }

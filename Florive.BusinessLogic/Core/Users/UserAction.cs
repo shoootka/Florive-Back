@@ -32,6 +32,8 @@ namespace Florive.BusinessLogic.Core.Users
                         Username = user.Username,
                         Email = user.Email,
                         Phone = user.Phone,
+                        Role = user.Role,
+                        CreatedAt = user.CreatedAt,
                         IsActive = user.IsActive
                     });
                 }
@@ -83,6 +85,8 @@ namespace Florive.BusinessLogic.Core.Users
                     Username = user.Username,
                     Email = user.Email,
                     Phone = user.Phone,
+                    Role = user.Role,
+                    CreatedAt = user.CreatedAt,
                     IsActive = user.IsActive
                 };
 
@@ -134,15 +138,6 @@ namespace Florive.BusinessLogic.Core.Users
                     };
                 }
 
-                if (string.IsNullOrWhiteSpace(user.Password))
-                {
-                    return new ResponseMsg
-                    {
-                        IsSuccess = false,
-                        Message = "Пароль обязателен"
-                    };
-                }
-
                 if (_context.Users.Any(u => u.Username == user.Username))
                 {
                     return new ResponseMsg
@@ -166,9 +161,10 @@ namespace Florive.BusinessLogic.Core.Users
                     Username = user.Username,
                     Email = user.Email,
                     Phone = user.Phone,
-                    PasswordHash = user.Password,
+                    PasswordHash = string.Empty,  //пустой хэш (будет заполнен при регистрации)               
                     IsActive = true,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Role = "User" 
                 };
 
                 var createdUserDTO = new UserDTO
@@ -177,6 +173,8 @@ namespace Florive.BusinessLogic.Core.Users
                     Username = newUser.Username,
                     Email = newUser.Email,
                     Phone = newUser.Phone,
+                    Role = newUser.Role,
+                    CreatedAt = newUser.CreatedAt,
                     IsActive = newUser.IsActive
                 };
 
@@ -255,6 +253,7 @@ namespace Florive.BusinessLogic.Core.Users
                 existingUser.Email = user.Email;
                 existingUser.Phone = user.Phone;
                 existingUser.IsActive = user.IsActive;
+                existingUser.Role = user.Role;  // ➕ Добавлено
 
                 var updatedUserDTO = new UserDTO
                 {
@@ -262,9 +261,10 @@ namespace Florive.BusinessLogic.Core.Users
                     Username = existingUser.Username,
                     Email = existingUser.Email,
                     Phone = existingUser.Phone,
+                    Role = existingUser.Role,
+                    CreatedAt = existingUser.CreatedAt,
                     IsActive = existingUser.IsActive
                 };
-
 
                 _context.SaveChanges();
 

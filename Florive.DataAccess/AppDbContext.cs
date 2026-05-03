@@ -9,6 +9,7 @@ namespace Florive.DataAccess
         public DbSet<User> Users { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<SubscriptionOrder> SubscriptionOrders { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; } 
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
