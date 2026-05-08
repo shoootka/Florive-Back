@@ -58,7 +58,7 @@ namespace Florive.Api.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddMinutes(60)
             });
 
@@ -80,6 +80,13 @@ namespace Florive.Api.Controllers
             // удаляем куки
             Response.Cookies.Delete("X-KEY");
 
+            Response.Cookies.Delete("X-KEY", new CookieOptions
+            {
+                Path = "/",
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+
             return Ok(new { IsSuccess = true, Message = "Выход выполнен" });
         }
 
@@ -97,6 +104,59 @@ namespace Florive.Api.Controllers
             var result = _businessLogic.GetSessionActions().ValidateSessionAction(sessionKey);
 
             return result.IsSuccess ? Ok(result) : Unauthorized(result);
+        }
+
+        [RequireAuth]
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            var sessionKey = Request.Cookies["X-KEY"];
+
+            if (string.IsNullOrEmpty(sessionKey))
+            {
+                return Unauthorized(new { IsSuccess = false, Message = "Сессия не найдена" });
+            }
+
+            var validateResult = _businessLogic.GetSessionActions().ValidateSessionAction(sessionKey);
+
+            if (!validateResult.IsSuccess)
+            {
+                return Unauthorized(new { IsSuccess = false, Message = validateResult.Message });
+            }
+
+            var dbContext = HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+
+            var session = dbContext.UserSessions.FirstOrDefault(s => s.SessionKey == sessionKey);
+
+            if (session == null)
+            {
+                return Unauthorized(new { IsSuccess = false, Message = "Сессия не найдена" });
+            }
+
+            var user = dbContext.Users.FirstOrDefault(u => u.Id == session.UserId);
+
+            if (user == null)
+            {
+                return Unauthorized(new { IsSuccess = false, Message = "Пользователь не найден" });
+            }
+
+            if (!user.IsActive)
+            {
+                return Unauthorized(new { IsSuccess = false, Message = "Пользователь заблокирован" });
+            }
+
+            return Ok(new
+            {
+                IsSuccess = true,
+                Message = "OK",
+                Data = new
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Role = user.Role
+                }
+            });
         }
     }
 }
