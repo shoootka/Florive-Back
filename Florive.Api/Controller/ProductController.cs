@@ -39,7 +39,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpPost]
         public IActionResult Create([FromBody] ProductDTO product)
         {
@@ -52,7 +52,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] ProductDTO product)
         {
@@ -67,7 +67,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

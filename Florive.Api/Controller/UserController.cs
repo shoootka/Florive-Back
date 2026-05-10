@@ -29,8 +29,8 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
         [RequireAuth]
+        [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
             var result = _userService.GetUserByIdAction(id);
@@ -42,7 +42,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpPost]
         public IActionResult Create([FromBody] UserDTO user)
         {
@@ -56,7 +56,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UserDTO user)
         {
@@ -71,7 +71,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

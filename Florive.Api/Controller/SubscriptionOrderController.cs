@@ -86,7 +86,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

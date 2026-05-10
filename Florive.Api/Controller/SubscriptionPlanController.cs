@@ -38,7 +38,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpPost]
         public IActionResult Create([FromBody] SubscriptionPlanDTO plan)
         {
@@ -51,7 +51,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] SubscriptionPlanDTO plan)
         {
@@ -66,7 +66,7 @@ namespace Florive.Api.Controller
         }
 
         [RequireAuth]
-        [RequireRole("Admin")]
+        [AdminMod]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
