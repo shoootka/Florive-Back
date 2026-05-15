@@ -6,6 +6,8 @@ using Florive.BusinessLogic.Functions.Auth;
 using Florive.BusinessLogic.Functions.Sessions; 
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
+using Florive.BusinessLogic.Functions.Carts;
+using Florive.BusinessLogic.Functions.Orders;
 
 namespace Florive.BusinessLogic
 {
@@ -47,5 +49,16 @@ namespace Florive.BusinessLogic
         {
             return new SessionFlow(_context);
         }
+
+        public ICart GetCartActions()
+        {
+            return new CartFunction(_context);
+        }
+
+        public IOrder GetOrderActions()
+        {
+            return new OrderFunction(_context);
+        }
+
     }
 }
