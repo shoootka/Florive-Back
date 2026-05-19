@@ -1,16 +1,53 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿
+using Florive.Domains.Models.Base;
 
-namespace eUseControl.Api.Controller
+public class OrderDto
+{  public int Id { get; set; }
+    public string ProductName { get; set; }
+    public int Quantity { get; set; }
+}
+
+public class ResponseMsg
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class HealthController : ControllerBase
+    public bool IsSuccess { get; set; }
+    public string Message { get; set; } = string.Empty;
+}
+
+public interface IOrder
+{
+    ResponseMsg CreateOrderAction(OrderDto order);
+    ResponseMsg UpdateOrderStatusAction(OrderDto order);
+}
+
+public class OrderAction
+{
+    public ResponseMsg ExecuteCreateOrderAction()
     {
-        [HttpGet("ping")]
-        public IActionResult Ping()
+        return new ResponseMsg
         {
-            return Ok("pong");
-        }
+            IsSuccess = true,
+            Message = "Order created successfully",
+        };
     }
+    public ResponseMsg ExecuteUpdateOrderStatusAction()
+    {
+        return new ResponseMsg
+        {
+            IsSuccess = true,
+            Message = "Order status updated successfully",
+        };
+    }
+}
+
+public class OrderFlow : OrderAction, IOrder
+{
+        public ResponseMsg CreateOrderAction(OrderDto order)
+        {
+            return ExecuteCreateOrderAction();
+        }
+     
+        public ResponseMsg UpdateOrderStatusAction(OrderDto order)
+        {
+            return ExecuteUpdateOrderStatusAction();
+        }
 }

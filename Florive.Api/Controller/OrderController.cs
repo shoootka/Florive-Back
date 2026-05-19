@@ -1,7 +1,6 @@
 using Florive.Api.Attributes;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
-using Florive.Domains.Entities;
 using Florive.Domains.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +10,7 @@ namespace Florive.Api.Controller
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private IOrder _orderService;
+        private readonly Florive.BusinessLogic.Interface.IOrder _orderService;
 
         public OrderController(AppDbContext context)
         {
@@ -45,7 +44,7 @@ namespace Florive.Api.Controller
             if (!result.IsSuccess)
                 return BadRequest(result);
 
-            return CreatedAtAction(nameof(GetByUser), new { userId = ((Order)result.Data).UserId }, result);
+            return Ok(result);
         }
 
         [RequireAuth]
