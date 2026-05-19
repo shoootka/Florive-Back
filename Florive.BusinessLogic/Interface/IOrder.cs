@@ -1,9 +1,6 @@
 ﻿using Florive.Domains.Models;
 using Florive.Domains.Models.Base;
 
-using Florive.Domains.Models;
-using Florive.Domains.Models.Base;
-
 namespace Florive.BusinessLogic.Interface
 {
     public interface IOrder
