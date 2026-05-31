@@ -3,6 +3,7 @@ using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Entities;
 using Florive.Domains.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Florive.Api.Controller
@@ -19,6 +20,7 @@ namespace Florive.Api.Controller
             _subscriptionPlanService = bl.GetSubscriptionPlanActions();
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -26,6 +28,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -37,8 +40,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Create([FromBody] SubscriptionPlanDTO plan)
         {
@@ -50,8 +52,7 @@ namespace Florive.Api.Controller
             return CreatedAtAction(nameof(GetById), new { id = ((Florive.Domains.Entities.SubscriptionPlan)result.Data).Id }, result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] SubscriptionPlanDTO plan)
         {
@@ -65,8 +66,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
