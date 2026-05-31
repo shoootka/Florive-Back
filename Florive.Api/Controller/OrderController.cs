@@ -2,6 +2,7 @@ using Florive.Api.Attributes;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Florive.Api.Controller
@@ -18,8 +19,7 @@ namespace Florive.Api.Controller
             _orderService = bl.GetOrderActions();
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -27,7 +27,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpGet("user/{userId}")]
         public IActionResult GetByUser(int userId)
         {
@@ -35,7 +35,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpPost]
         public IActionResult Create([FromBody] OrderDTO dto)
         {
@@ -47,8 +47,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpPut("status/{id}")]
         public IActionResult UpdateStatus(int id, [FromBody] string status)
         {
@@ -60,8 +59,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

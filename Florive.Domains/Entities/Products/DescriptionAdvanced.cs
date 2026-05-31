@@ -14,13 +14,10 @@ public class DescriptionAdvanced
     public int Id { get; set; }
 
     public double? Width { get; set; }
-    public double? Height { get; set; }
-    public double? Depth { get; set; }
-    public double? Weight { get; set; }
 
-    [StringLength(200)]
-    public string? Material { get; set; }
+    public double? Height { get; set; }
 
     public int DescriptionId { get; set; }
+
     public ProductDescriptionData Description { get; set; } = null!;
 }

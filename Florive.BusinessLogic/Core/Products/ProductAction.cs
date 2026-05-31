@@ -1,13 +1,8 @@
-﻿using Florive.Domains.Entities;
+﻿using Florive.DataAccess;
+using Florive.Domains.Entities.Products;
 using Florive.Domains.Models;
 using Florive.Domains.Models.Base;
-using Florive.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Florive.BusinessLogic.Core.Products
 {
@@ -24,20 +19,28 @@ namespace Florive.BusinessLogic.Core.Products
         {
             try
             {
-                var products = _context.Products.ToList();
+                var products = _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.Images)
+                    .Include(p => p.Description)
+                        .ThenInclude(d => d.DescriptionAdvanced)
+                    .ToList();
 
-                var result = new List<ProductDTO>();
-                foreach (var product in products)
+                var result = products.Select(product => new ProductDTO
                 {
-                    result.Add(new ProductDTO
-                    {
-                        Id = product.Id,
-                        Name = product.Name,
-                        Price = product.Price,
-                        Category = product.Category,
-                        Image = product.Image
-                    });
-                }
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    CategoryId = product.CategoryId,
+                    Category = product.Category?.Name,
+                    Image = product.Images.FirstOrDefault(i => i.IsMain)?.Url
+                            ?? product.Images.FirstOrDefault()?.Url,
+                    Images = product.Images.Select(i => i.Url).ToList(),
+                    ShortDescription = product.Description?.ShortDescription,
+                    FullDescription = product.Description?.FullDescription,
+                    Width = product.Description?.DescriptionAdvanced?.Width,
+                    Height = product.Description?.DescriptionAdvanced?.Height
+                }).ToList();
 
                 return new ResponseMsg
                 {
@@ -69,7 +72,12 @@ namespace Florive.BusinessLogic.Core.Products
                     };
                 }
 
-                var product = _context.Products.FirstOrDefault(p => p.Id == id);
+                var product = _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.Images)
+                    .Include(p => p.Description)
+                        .ThenInclude(d => d.DescriptionAdvanced)
+                    .FirstOrDefault(p => p.Id == id);
 
                 if (product == null)
                 {
@@ -85,8 +93,15 @@ namespace Florive.BusinessLogic.Core.Products
                     Id = product.Id,
                     Name = product.Name,
                     Price = product.Price,
-                    Category = product.Category,
-                    Image = product.Image
+                    CategoryId = product.CategoryId,
+                    Category = product.Category?.Name,
+                    Image = product.Images.FirstOrDefault(i => i.IsMain)?.Url
+                            ?? product.Images.FirstOrDefault()?.Url,
+                    Images = product.Images.Select(i => i.Url).ToList(),
+                    ShortDescription = product.Description?.ShortDescription,
+                    FullDescription = product.Description?.FullDescription,
+                    Width = product.Description?.DescriptionAdvanced?.Width,
+                    Height = product.Description?.DescriptionAdvanced?.Height
                 };
 
                 return new ResponseMsg
@@ -137,13 +152,71 @@ namespace Florive.BusinessLogic.Core.Products
                     };
                 }
 
-                var newProduct = new Product
+                CategoryData? category = null;
+
+                if (product.CategoryId > 0)
+                {
+                    category = _context.Categories.FirstOrDefault(c => c.Id == product.CategoryId);
+                }
+
+                if (category == null && !string.IsNullOrWhiteSpace(product.Category))
+                {
+                    category = _context.Categories
+                        .FirstOrDefault(c => c.Name == product.Category);
+
+                    if (category == null)
+                    {
+                        category = new CategoryData
+                        {
+                            Name = product.Category
+                        };
+
+                        _context.Categories.Add(category);
+                        _context.SaveChanges();
+                    }
+                }
+
+                if (category == null)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "Категория обязательна"
+                    };
+                }
+
+                var newProduct = new ProductData
                 {
                     Name = product.Name,
                     Price = product.Price,
-                    Category = product.Category,
-                    Image = product.Image
+                    CategoryId = category.Id
                 };
+
+                if (!string.IsNullOrWhiteSpace(product.Image))
+                {
+                    newProduct.Images.Add(new ProductImgData
+                    {
+                        Url = product.Image,
+                        IsMain = true
+                    });
+                }
+
+                if (!string.IsNullOrWhiteSpace(product.ShortDescription) ||
+                    !string.IsNullOrWhiteSpace(product.FullDescription) ||
+                    product.Width.HasValue ||
+                    product.Height.HasValue)
+                {
+                    newProduct.Description = new ProductDescriptionData
+                    {
+                        ShortDescription = product.ShortDescription ?? "",
+                        FullDescription = product.FullDescription ?? "",
+                        DescriptionAdvanced = new DescriptionAdvanced
+                        {
+                            Width = product.Width,
+                            Height = product.Height
+                        }
+                    };
+                }
 
                 _context.Products.Add(newProduct);
                 _context.SaveChanges();
@@ -152,7 +225,21 @@ namespace Florive.BusinessLogic.Core.Products
                 {
                     IsSuccess = true,
                     Message = "Продукт создан успешно",
-                    Data = newProduct
+                    Data = new ProductDTO
+                    {
+                        Id = newProduct.Id,
+                        Name = newProduct.Name,
+                        Price = newProduct.Price,
+                        CategoryId = newProduct.CategoryId,
+                        Category = category.Name,
+                        Image = newProduct.Images.FirstOrDefault(i => i.IsMain)?.Url
+                                 ?? newProduct.Images.FirstOrDefault()?.Url,
+                        Images = newProduct.Images.Select(i => i.Url).ToList(),
+                        ShortDescription = newProduct.Description?.ShortDescription,
+                        FullDescription = newProduct.Description?.FullDescription,
+                        Width = newProduct.Description?.DescriptionAdvanced?.Width,
+                        Height = newProduct.Description?.DescriptionAdvanced?.Height
+                    }
                 };
             }
             catch (Exception ex)
@@ -187,25 +274,12 @@ namespace Florive.BusinessLogic.Core.Products
                     };
                 }
 
-                if (string.IsNullOrWhiteSpace(product.Name))
-                {
-                    return new ResponseMsg
-                    {
-                        IsSuccess = false,
-                        Message = "Название продукта обязательно"
-                    };
-                }
-
-                if (product.Price <= 0)
-                {
-                    return new ResponseMsg
-                    {
-                        IsSuccess = false,
-                        Message = "Цена должна быть больше 0"
-                    };
-                }
-
-                var existingProduct = _context.Products.FirstOrDefault(p => p.Id == id);
+                var existingProduct = _context.Products
+                    .Include(p => p.Category)
+                    .Include(p => p.Images)
+                    .Include(p => p.Description)
+                        .ThenInclude(d => d.DescriptionAdvanced)
+                    .FirstOrDefault(p => p.Id == id);
 
                 if (existingProduct == null)
                 {
@@ -216,18 +290,97 @@ namespace Florive.BusinessLogic.Core.Products
                     };
                 }
 
-                existingProduct.Name = product.Name;
+                existingProduct.Name = product.Name ?? existingProduct.Name;
                 existingProduct.Price = product.Price;
-                existingProduct.Category = product.Category;
-                existingProduct.Image = product.Image;
+
+                if (product.CategoryId > 0)
+                {
+                    existingProduct.CategoryId = product.CategoryId;
+                }
+                else if (!string.IsNullOrWhiteSpace(product.Category))
+                {
+                    var category = _context.Categories
+                        .FirstOrDefault(c => c.Name == product.Category);
+
+                    if (category == null)
+                    {
+                        category = new CategoryData
+                        {
+                            Name = product.Category
+                        };
+
+                        _context.Categories.Add(category);
+                        _context.SaveChanges();
+                    }
+
+                    existingProduct.CategoryId = category.Id;
+                }
+
+                if (!string.IsNullOrWhiteSpace(product.Image))
+                {
+                    var mainImage = existingProduct.Images.FirstOrDefault(i => i.IsMain)
+                                    ?? existingProduct.Images.FirstOrDefault();
+
+                    if (mainImage == null)
+                    {
+                        existingProduct.Images.Add(new ProductImgData
+                        {
+                            Url = product.Image,
+                            IsMain = true
+                        });
+                    }
+                    else
+                    {
+                        mainImage.Url = product.Image;
+                        mainImage.IsMain = true;
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(product.ShortDescription) ||
+                    !string.IsNullOrWhiteSpace(product.FullDescription) ||
+                    product.Width.HasValue ||
+                    product.Height.HasValue)
+                {
+                    if (existingProduct.Description == null)
+                    {
+                        existingProduct.Description = new ProductDescriptionData();
+                    }
+
+                    existingProduct.Description.ShortDescription = product.ShortDescription ?? "";
+                    existingProduct.Description.FullDescription = product.FullDescription ?? "";
+
+                    if (existingProduct.Description.DescriptionAdvanced == null)
+                    {
+                        existingProduct.Description.DescriptionAdvanced = new DescriptionAdvanced();
+                    }
+
+                    existingProduct.Description.DescriptionAdvanced.Width = product.Width ?? 0;
+                    existingProduct.Description.DescriptionAdvanced.Height = product.Height ?? 0;
+                }
 
                 _context.SaveChanges();
+
+                var productDTO = new ProductDTO
+                {
+                    Id = existingProduct.Id,
+                    Name = existingProduct.Name,
+                    Price = existingProduct.Price,
+                    CategoryId = existingProduct.CategoryId,
+                    Category = existingProduct.Category?.Name,
+                    Image = existingProduct.Images.FirstOrDefault(i => i.IsMain)?.Url
+            ?? existingProduct.Images.FirstOrDefault()?.Url,
+                    Images = existingProduct.Images.Select(i => i.Url).ToList(),
+                    ShortDescription = existingProduct.Description?.ShortDescription,
+                    FullDescription = existingProduct.Description?.FullDescription,
+                    Width = existingProduct.Description?.DescriptionAdvanced?.Width,
+                    Height = existingProduct.Description?.DescriptionAdvanced?.Height
+                };
 
                 return new ResponseMsg
                 {
                     IsSuccess = true,
                     Message = "Продукт обновлен успешно",
-                    Data = existingProduct
+                    Data = productDTO
                 };
             }
             catch (Exception ex)
@@ -253,7 +406,11 @@ namespace Florive.BusinessLogic.Core.Products
                     };
                 }
 
-                var product = _context.Products.FirstOrDefault(p => p.Id == id);
+                var product = _context.Products
+                    .Include(p => p.Images)
+                    .Include(p => p.Description)
+                        .ThenInclude(d => d.DescriptionAdvanced)
+                    .FirstOrDefault(p => p.Id == id);
 
                 if (product == null)
                 {

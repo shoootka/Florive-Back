@@ -2,12 +2,15 @@ using Florive.Api.Attributes;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Florive.Api.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+
+    [Authorize]
     public class CartController : ControllerBase
     {
         private ICart _cartService;

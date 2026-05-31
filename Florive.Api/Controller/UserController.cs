@@ -3,6 +3,7 @@ using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Entities;
 using Florive.Domains.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,7 @@ namespace Florive.Api.Controller
             _userService = bl.GetUserActions();
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -29,7 +30,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -41,8 +42,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Create([FromBody] UserDTO user)
         {
@@ -55,8 +55,7 @@ namespace Florive.Api.Controller
             return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] UserDTO user)
         {
@@ -70,8 +69,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

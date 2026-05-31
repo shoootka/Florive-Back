@@ -2,6 +2,7 @@
 using Florive.Domains.Entities;
 using Florive.Domains.Models;
 using Florive.Domains.Models.Base;
+using Florive.Domains.Entities.Products;
 
 namespace Florive.BusinessLogic.Core.Orders
 {
@@ -130,7 +131,7 @@ namespace Florive.BusinessLogic.Core.Orders
 
                 // считаем TotalPrice из актуальных цен продуктов
                 decimal totalPrice = 0;
-                var orderItemsData = new List<(CartItem cartItem, Product product)>();
+                var orderItemsData = new List<(CartItem cartItem, ProductData product)>();
 
                 foreach (var cartItem in cartItems)
                 {

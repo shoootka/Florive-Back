@@ -2,6 +2,7 @@
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace Florive.Api.Controller
             _subscriptionOrderService = bl.GetSubscriptionOrderActions();
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -29,7 +30,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -41,7 +42,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpPost]
         public IActionResult Create([FromBody] SubscriptionOrderDTO order)
         {
@@ -53,11 +54,10 @@ namespace Florive.Api.Controller
             return CreatedAtAction(nameof(GetById), new { id = ((Florive.Domains.Entities.SubscriptionOrder)result.Data).Id }, result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] SubscriptionOrderDTO order)
         {
-            // Получаем текущего пользователя из сессии
             var sessionKey = HttpContext.Request.Cookies["X-KEY"];
             var session = _dbContext.UserSessions
                 .FirstOrDefault(s => s.SessionKey == sessionKey);
@@ -66,11 +66,9 @@ namespace Florive.Api.Controller
                 ? _dbContext.Users.FirstOrDefault(u => u.Id == session.UserId)
                 : null;
 
-            // Получаем заказ
             var existingOrder = _dbContext.SubscriptionOrders
                 .FirstOrDefault(o => o.Id == id);
 
-            // Проверяем: пользователь может редактировать только СВОЙ заказ
             if (existingOrder == null)
                 return NotFound(new { IsSuccess = false, Message = "Заказ не найден" });
 
@@ -85,8 +83,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

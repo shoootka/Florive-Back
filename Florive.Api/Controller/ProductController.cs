@@ -3,6 +3,7 @@ using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Entities;
 using Florive.Domains.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace Florive.Api.Controller
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             var result = _productService.GetAllProductsAction();
@@ -28,6 +30,7 @@ namespace Florive.Api.Controller
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public IActionResult GetById(int id)
         {
             var result = _productService.GetProductByIdAction(id);
@@ -38,8 +41,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult Create([FromBody] ProductDTO product)
         {
@@ -51,8 +53,7 @@ namespace Florive.Api.Controller
             return CreatedAtAction(nameof(GetById), new { id = ((Product)result.Data).Id }, result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] ProductDTO product)
         {
@@ -66,8 +67,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
-        [AdminMod]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
