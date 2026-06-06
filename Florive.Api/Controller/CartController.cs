@@ -1,4 +1,3 @@
-using Florive.Api.Attributes;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Models;
@@ -10,7 +9,6 @@ namespace Florive.Api.Controller
     [Route("api/[controller]")]
     [ApiController]
 
-    [Authorize]
     public class CartController : ControllerBase
     {
         private ICart _cartService;
@@ -21,7 +19,7 @@ namespace Florive.Api.Controller
             _cartService = bl.GetCartActions();
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpGet("user/{userId}")]
         public IActionResult GetByUser(int userId)
         {
@@ -29,7 +27,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpPost]
         public IActionResult AddToCart([FromBody] CartItemDTO dto)
         {
@@ -41,7 +39,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult UpdateCartItem(int id, [FromBody] CartItemDTO dto)
         {
@@ -53,7 +51,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult DeleteCartItem(int id)
         {
@@ -65,7 +63,7 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
-        [RequireAuth]
+        [Authorize]
         [HttpDelete("clear/{userId}")]
         public IActionResult ClearCart(int userId)
         {

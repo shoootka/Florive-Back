@@ -1,4 +1,3 @@
-using Florive.Api.Attributes;
 using Florive.BusinessLogic.Interface;
 using Florive.DataAccess;
 using Florive.Domains.Models;
@@ -67,6 +66,18 @@ namespace Florive.Api.Controller
 
             if (!result.IsSuccess)
                 return NotFound(result);
+
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPut("cancel/{id}")]
+        public IActionResult CancelOrder(int id)
+        {
+            var result = _orderService.UpdateOrderStatusAction(id, "Cancelled");
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
 
             return Ok(result);
         }
