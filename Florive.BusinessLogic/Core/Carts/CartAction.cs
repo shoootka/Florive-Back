@@ -250,19 +250,15 @@ namespace Florive.BusinessLogic.Core.Carts
                     };
                 }
 
-                var items = _context.CartItems.Where(c => c.UserId == userId).ToList();
+                var items = _context.CartItems
+                    .Where(c => c.UserId == userId)
+                    .ToList();
 
-                if (items.Count == 0)
+                if (items.Count > 0)
                 {
-                    return new ResponseMsg
-                    {
-                        IsSuccess = false,
-                        Message = $"Корзина пользователя с ID {userId} уже пуста"
-                    };
+                    _context.CartItems.RemoveRange(items);
+                    _context.SaveChanges();
                 }
-
-                _context.CartItems.RemoveRange(items);
-                _context.SaveChanges();
 
                 return new ResponseMsg
                 {

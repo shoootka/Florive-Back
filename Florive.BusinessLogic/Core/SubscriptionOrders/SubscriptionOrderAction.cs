@@ -150,6 +150,7 @@ namespace Florive.BusinessLogic.Core.SubscriptionOrders
 
                 var newOrder = new SubscriptionOrder
                 {
+                    UserId = order.UserId,
                     SubscriptionPlanId = order.SubscriptionPlanId,
                     FirstFlowerId = order.FirstFlowerId,
                     Name = order.Name,
