@@ -21,7 +21,10 @@ namespace Florive.BusinessLogic.Functions.SubscriptionOrders
         {
             return ExecuteGetAllOrdersAction();
         }
-
+        public ResponseMsg GetOrdersByUserAction(int userId)
+        {
+            return ExecuteGetOrdersByUserAction(userId);
+        }
         public ResponseMsg GetOrderByIdAction(int id)
         {
             return GetOrderDataByIdAction(id);

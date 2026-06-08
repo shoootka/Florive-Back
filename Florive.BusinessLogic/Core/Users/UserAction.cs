@@ -252,8 +252,8 @@ namespace Florive.BusinessLogic.Core.Users
                 existingUser.Username = user.Username;
                 existingUser.Email = user.Email;
                 existingUser.Phone = user.Phone;
-                existingUser.IsActive = user.IsActive;
-                existingUser.Role = user.Role;  // ➕ Добавлено
+                // existingUser.IsActive = user.IsActive;
+                existingUser.Role = user.Role;
 
                 var updatedUserDTO = new UserDTO
                 {

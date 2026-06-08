@@ -61,6 +61,61 @@ namespace Florive.BusinessLogic.Core.SubscriptionOrders
             }
         }
 
+        protected ResponseMsg ExecuteGetOrdersByUserAction(int userId)
+        {
+            try
+            {
+                if (userId <= 0)
+                {
+                    return new ResponseMsg
+                    {
+                        IsSuccess = false,
+                        Message = "ID пользователя должен быть больше 0"
+                    };
+                }
+
+                var orders = _context.SubscriptionOrders
+                    .Where(o => o.UserId == userId)
+                    .ToList();
+
+                var result = new List<SubscriptionOrderDTO>();
+
+                foreach (var order in orders)
+                {
+                    result.Add(new SubscriptionOrderDTO
+                    {
+                        Id = order.Id,
+                        UserId = order.UserId,
+                        SubscriptionPlanId = order.SubscriptionPlanId,
+                        FirstFlowerId = order.FirstFlowerId,
+                        Name = order.Name,
+                        Phone = order.Phone,
+                        Email = order.Email,
+                        Address = order.Address,
+                        Frequency = order.Frequency,
+                        FirstDeliveryDate = order.FirstDeliveryDate,
+                        Comment = order.Comment,
+                        Status = order.Status
+                    });
+                }
+
+                return new ResponseMsg
+                {
+                    IsSuccess = true,
+                    Message = "Подписки пользователя получены успешно",
+                    Data = result
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseMsg
+                {
+                    IsSuccess = false,
+                    Message = $"Ошибка при получении подписок пользователя: {ex.Message}"
+                };
+            }
+        }
+
         protected ResponseMsg GetOrderDataByIdAction(int id)
         {
             try

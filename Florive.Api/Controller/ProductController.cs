@@ -50,7 +50,7 @@ namespace Florive.Api.Controller
             if (!result.IsSuccess)
                 return BadRequest(result);
 
-            return CreatedAtAction(nameof(GetById), new { id = ((Product)result.Data).Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = ((ProductDTO)result.Data).Id }, result);
         }
 
         [Authorize(Roles = "Admin")]
