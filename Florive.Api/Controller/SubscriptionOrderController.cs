@@ -29,6 +29,18 @@ namespace Florive.Api.Controller
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpGet("user/{userId}")]
+        public IActionResult GetByUser(int userId)
+        {
+            var result = _subscriptionOrderService.GetOrdersByUserAction(userId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {

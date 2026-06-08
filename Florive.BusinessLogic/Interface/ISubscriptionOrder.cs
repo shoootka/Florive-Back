@@ -15,5 +15,6 @@ namespace Florive.BusinessLogic.Interface
         ResponseMsg CreateOrderAction(SubscriptionOrderDTO order);
         ResponseMsg UpdateOrderAction(int id, SubscriptionOrderDTO order);
         ResponseMsg DeleteOrderAction(int id);
+        ResponseMsg GetOrdersByUserAction(int userId);
     }
 }

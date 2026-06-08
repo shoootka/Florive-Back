@@ -80,5 +80,17 @@ namespace Florive.Api.Controller
 
             return Ok(result);
         }
+
+        [Authorize]
+        [HttpPut("profile/{id}")]
+        public IActionResult UpdateProfile(int id, [FromBody] UserDTO user)
+        {
+            var result = _userService.UpdateUserAction(id, user);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }
